@@ -1,29 +1,17 @@
+from flask import Flask, request, abort
 from openvino_genai import LLMPipeline
 import subprocess
 
+AUTHORIZED_IP = "10.0.0.50"
+
 pipe = LLMPipeline(r"C:\Users\user\Desktop\MCP\ov_model", device="CPU")
 
-SYSTEM = """
-You are Lab-Agent.
-You help manage lab machines safely.
-
-Allowed actions:
-- ping
-- ipconfig
-- hostname
-- dir
-- docker ps
-- systeminfo
-
-Never use destructive commands.
-Return only a command to execute.
-"""
+app = Flask(__name__)
 
 ALLOWLIST = [
     "ping",
-    "ipconfig",
     "hostname",
-    "dir",
+    "ipconfig",
     "docker ps",
     "systeminfo"
 ]
@@ -38,17 +26,25 @@ def execute(cmd):
     return result.stdout
 
 
-while True:
-    user = input("lab> ")
+@app.before_request
+def restrict_ip():
+    if request.remote_addr != AUTHORIZED_IP:
+        abort(403)
 
-    prompt = SYSTEM + "\nUser: " + user
+
+@app.route("/run", methods=["POST"])
+def run():
+    data = request.json
+    prompt = data["prompt"]
+
     response = pipe(prompt, max_new_tokens=80)
-
     cmd = response.text.strip()
 
     if not validate(cmd):
-        print("Blocked command:", cmd)
-        continue
+        return {"error": "blocked command", "cmd": cmd}
 
-    print("Executing:", cmd)
-    print(execute(cmd))
+    output = execute(cmd)
+    return {"cmd": cmd, "output": output}
+
+
+app.run(host="0.0.0.0", port=8080)
