@@ -1,0 +1,6 @@
+#python 3.10.11
+openvino==2024.4.0
+openvino-genai==2024.4.0
+transformers==4.44.2
+huggingface_hub==0.24.6
+numpy>=1.26
