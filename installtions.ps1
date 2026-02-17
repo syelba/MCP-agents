@@ -1,11 +1,11 @@
 $ErrorActionPreference = "Stop"
 
-$python = "C:\Users\itl\Desktop\MCP\ovms\ovms\python\python.exe"
-$hf_cli = "C:\Users\itl\Desktop\MCP\ovms\ovms\python\Scripts\huggingface-cli.exe"
+$python = "C:\Users\user\Desktop\MCP\ovms\ovms\python\python.exe"
+$hf_cli = "C:\Users\user\Desktop\MCP\ovms\ovms\python\Scripts\huggingface-cli.exe"
 
-$proxy = "http://proxy-dmz.intel.com:912"
+$proxy = "http://"
 
-$modelDir = "C:\Users\itl\Desktop\MCP\ov_model"
+$modelDir = "C:\Users\user\Desktop\MCP\ov_model"
 
 Write-Host "Setting proxy..."
 $env:HTTP_PROXY = $proxy
